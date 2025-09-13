@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getHewanList, getTransaksiList } from "../api";
 import { useNavigate } from "react-router-dom";
 import CreateTransaksiModal from "../components/CreateTransaksiModal";
+import PengembalianModal from "../components/PengembalianModal";
 
 export default function ListTransaksiPage() {
   const navigate = useNavigate();
@@ -10,7 +11,8 @@ export default function ListTransaksiPage() {
   const [transaksi, setTransaksi] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
+  const [showPengembalian, setShowPengembalian] = useState(false);
+  const [selectedTransaksi, setSelectedTransaksi] = useState(null);
   const fetchTransaksi = () => {
     setLoading(true);
     getTransaksiList(selectedHewan ? { jenisHewan: selectedHewan } : {})
@@ -95,7 +97,10 @@ export default function ListTransaksiPage() {
                 <td className="p-2 border">
                   {item.status === "Ongoing" ? (
                     <button
-                      onClick={() => navigate(`/pengembalian/${item.id}`)}
+                      onClick={() => {
+                        setSelectedTransaksi(item);
+                        setShowPengembalian(true);
+                      }}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                     >
                       Pengembalian
@@ -115,6 +120,13 @@ export default function ListTransaksiPage() {
         open={showModal}
         onClose={() => setShowModal(false)}
         hewanList={hewanList}
+        onSuccess={fetchTransaksi}
+      />
+
+      <PengembalianModal
+        open={showPengembalian}
+        transaksi={selectedTransaksi}
+        onClose={() => setShowPengembalian(false)}
         onSuccess={fetchTransaksi}
       />
     </div>
